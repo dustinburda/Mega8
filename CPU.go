@@ -2,6 +2,7 @@ package main
 
 import (
 	// "bufio"
+	"errors"
 	"fmt"
 	"os"
 	// "io"
@@ -22,15 +23,20 @@ type CPU struct {
 	display *Display
 }
 
-func (cpu *CPU) LOAD_ROM(path string) {
+// TODO: add amount of bytes read
+func (cpu *CPU) LOAD_ROM(path string) (int, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		fmt.Println("Failed to load ROM!")
-		return
+		return 0, errors.New("failed to load ROM")
 	}
 	defer file.Close()
 
-	file.Read(cpu.memory[PROGRAM_START:])
+	bytes_read, err := file.Read(cpu.memory[PROGRAM_START:])
+	if err != nil {
+		return 0, errors.New("failed to read ROM")
+	}
+
+	return bytes_read, nil
 
 }
 
@@ -48,14 +54,100 @@ func (cpu *CPU) CPU_RESET() {
 	clear(cpu.stack) //  = nil   Setting slice to nil will release the underlying memory to the garbage collection
 
 	cpu.display.CLEAR_DISPLAY()
+
+	// TODO: learn more about timers
+	cpu.delay_timer = 60
+	cpu.sound_timer = 60
 }
 
+// TODO: initialize display here
 func (cpu *CPU) CPU_INIT() {
 	fmt.Println("INIT")
 }
 
 func (cpu *CPU) MAIN_LOOP() {
 	for {
-		fmt.Println("RUNNING")
+		opcode := cpu.FETCH() // OPCODE
+
+		_ = cpu.DECODE(opcode) // TODO: should decode return a function?
+		// instruction()
+
+		// EMULATE_GRAPHICS()
+		// EMULATE_SOUND()
 	}
+}
+
+func (cpu *CPU) FETCH() uint16 {
+	var op uint16 = 0x0
+
+	// stored big endian
+	word_first_half := cpu.memory[cpu.PC]
+	word_second_half := cpu.memory[cpu.PC+1]
+
+	op |= uint16(word_first_half) << 8
+	op |= uint16(word_second_half)
+
+	cpu.PC += 2
+
+	return op
+}
+
+func (cpu *CPU) DECODE(opcode uint16) func(uint16) {
+	nibble_one := opcode & 0xF000
+	nibble_two := opcode & 0x0F00
+	nibble_three := opcode & 0x00F0
+	nibble_four := opcode & 0x000F
+
+	fmt.Println(nibble_one + nibble_two + nibble_three + nibble_four)
+
+	switch nibble_one {
+	case 0x0:
+
+	case 0x1:
+		switch nibble_four {
+		case 0x0:
+		case 0xE:
+		}
+	case 0x2:
+	case 0x3:
+	case 0x4:
+	case 0x5:
+	case 0x6:
+	case 0x7:
+	case 0x8:
+		switch nibble_four {
+		case 0x1:
+		case 0x2:
+		case 0x3:
+		case 0x4:
+		case 0x5:
+		case 0x6:
+		case 0x7:
+		case 0xE:
+		}
+	case 0x9:
+	case 0xA:
+	case 0xB:
+	case 0xC:
+	case 0xD:
+	case 0xE:
+		switch nibble_three | nibble_four {
+		case 0x9E:
+		case 0xA1:
+		}
+	case 0xF:
+		switch nibble_three | nibble_four {
+		case 0x07:
+		case 0x0A:
+		case 0x15:
+		case 0x18:
+		case 0x1E:
+		case 0x29:
+		case 0x33:
+		case 0x55:
+		case 0x65:
+		}
+	}
+
+	return nil
 }
