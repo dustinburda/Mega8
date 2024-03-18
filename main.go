@@ -8,6 +8,11 @@ import (
 
 func main() {
 	fmt.Println("Hello World!")
+
+	opcode := uint16(0x1234)
+	var CHIP_8CPU CPU
+	CHIP_8CPU.DECODE(opcode)
+
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
 		panic(err)
 	}

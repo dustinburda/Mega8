@@ -98,7 +98,7 @@ func (cpu *CPU) DECODE(opcode uint16) func(uint16) {
 	nibble_three := opcode & 0x00F0
 	nibble_four := opcode & 0x000F
 
-	fmt.Println(nibble_one + nibble_two + nibble_three + nibble_four)
+	fmt.Println(nibble_one, nibble_two, nibble_three, nibble_four)
 
 	switch nibble_one {
 	case 0x0:
