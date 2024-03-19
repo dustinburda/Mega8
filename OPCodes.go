@@ -2,16 +2,20 @@ package main
 
 import "fmt"
 
+// @brief: Clears display
 func (cpu *CPU) EXECUTE_0x00E0() {
 	fmt.Println("Executing 0x00E0")
+	cpu.display.CLEAR_DISPLAY()
 }
 
 func (cpu *CPU) EXECUTE_0x00EE() {
 	fmt.Println("Executing 0x00E0")
 }
 
-func (cpu *CPU) EXECUTE_0x1NNN() {
+func (cpu *CPU) EXECUTE_0x1NNN(opcode uint16) {
 	fmt.Println("Executing 0x1NNN")
+	cpu.PC = (opcode & 0x0FFF)
+
 }
 
 func (cpu *CPU) EXECUTE_0x2NNN() {
@@ -30,12 +34,27 @@ func (cpu *CPU) EXECUTE_0x5XY0() {
 	fmt.Println("Executing 0x5XY0")
 }
 
-func (cpu *CPU) EXECUTE_0x6XNN() {
+// @brief: sets register Vx to value NN
+// @param: opcode to be executed
+func (cpu *CPU) EXECUTE_0x6XNN(opcode uint16) {
 	fmt.Println("Executing 0x6XNN")
+
+	Vx := (opcode & 0x0F00) >> 8
+	NN := (opcode & 0x00FF)
+
+	cpu.data_registers[Vx] = uint8(NN)
 }
 
-func (cpu *CPU) EXECUTE_0x7XNN() {
+// @brief: adds NN to the register Vx
+// @param: opcode to be executed
+func (cpu *CPU) EXECUTE_0x7XNN(opcode uint16) {
 	fmt.Println("Executing 0x7XNN")
+
+	Vx := (opcode & 0x0F00) >> 8
+	NN := (opcode & 0x00FF)
+
+	cpu.data_registers[Vx] += uint8(NN)
+
 }
 
 func (cpu *CPU) EXECUTE_0x8XY0() {
@@ -77,8 +96,12 @@ func (cpu *CPU) EXECUTE_0x9XY0() {
 	fmt.Println("Executing 0x9XY0")
 }
 
-func (cpu *CPU) EXECUTE_0xANNN() {
+func (cpu *CPU) EXECUTE_0xANNN(opcode uint16) {
 	fmt.Println("Executing 0xANNN")
+
+	NNN := (opcode & 0x0FFF)
+
+	cpu.register_I = NNN
 }
 
 func (cpu *CPU) EXECUTE_0xBNNN() {
@@ -89,7 +112,9 @@ func (cpu *CPU) EXECUTE_0xCXNN() {
 	fmt.Println("Executing 0xCXNN")
 }
 
-func (cpu *CPU) EXECUTE_0xDXYN() {
+// @brief:
+// @param:
+func (cpu *CPU) EXECUTE_0xDXYN(opcode uint16) {
 	fmt.Println("Executing 0xDXYN")
 }
 

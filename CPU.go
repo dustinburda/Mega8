@@ -23,7 +23,6 @@ type CPU struct {
 	display *Display
 }
 
-// TODO: add amount of bytes read
 func (cpu *CPU) LOAD_ROM(path string) (int, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -61,18 +60,25 @@ func (cpu *CPU) CPU_RESET() {
 }
 
 // TODO: initialize display here
+// TODO: initialize
 func (cpu *CPU) CPU_INIT() {
 	fmt.Println("INIT")
 }
 
-func (cpu *CPU) MAIN_LOOP() {
+// Single Fetch-Decode-Execute Cycle
+func (cpu *CPU) CYCLE() {
 	for {
 		opcode := cpu.FETCH() // OPCODE
-
-		cpu.DECODE(opcode) // TODO: should decode return a function?
+		cpu.DECODE(opcode)    // DECODE + EXECUTE
 
 		// EMULATE_GRAPHICS()
 		// EMULATE_SOUND()
+	}
+}
+
+func (cpu *CPU) MAIN_LOOP() {
+	for {
+		cpu.CYCLE()
 	}
 }
 
@@ -108,7 +114,7 @@ func (cpu *CPU) DECODE(opcode uint16) func(uint16) {
 			cpu.EXECUTE_0x00EE()
 		}
 	case 0x1:
-		cpu.EXECUTE_0x1NNN()
+		cpu.EXECUTE_0x1NNN(opcode)
 	case 0x2:
 		cpu.EXECUTE_0x2NNN()
 	case 0x3:
@@ -118,9 +124,9 @@ func (cpu *CPU) DECODE(opcode uint16) func(uint16) {
 	case 0x5:
 		cpu.EXECUTE_0x5XY0()
 	case 0x6:
-		cpu.EXECUTE_0x6XNN()
+		cpu.EXECUTE_0x6XNN(opcode)
 	case 0x7:
-		cpu.EXECUTE_0x7XNN()
+		cpu.EXECUTE_0x7XNN(opcode)
 	case 0x8:
 		switch nibble_four {
 		case 0x0:
