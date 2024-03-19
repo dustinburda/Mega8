@@ -116,6 +116,7 @@ func (cpu *CPU) EXECUTE_0xCXNN() {
 // @param:
 func (cpu *CPU) EXECUTE_0xDXYN(opcode uint16) {
 	fmt.Println("Executing 0xDXYN")
+
 }
 
 func (cpu *CPU) EXECUTE_0xEX9E() {

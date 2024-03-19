@@ -151,13 +151,13 @@ func (cpu *CPU) DECODE(opcode uint16) func(uint16) {
 	case 0x9:
 		cpu.EXECUTE_0x9XY0()
 	case 0xA:
-		cpu.EXECUTE_0xANNN()
+		cpu.EXECUTE_0xANNN(opcode)
 	case 0xB:
 		cpu.EXECUTE_0xBNNN()
 	case 0xC:
 		cpu.EXECUTE_0xCXNN()
 	case 0xD:
-		cpu.EXECUTE_0xDXYN()
+		cpu.EXECUTE_0xDXYN(opcode)
 	case 0xE:
 		switch nibble_three<<4 | nibble_four {
 		case 0x9E:
