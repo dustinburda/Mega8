@@ -69,8 +69,7 @@ func (cpu *CPU) MAIN_LOOP() {
 	for {
 		opcode := cpu.FETCH() // OPCODE
 
-		_ = cpu.DECODE(opcode) // TODO: should decode return a function?
-		// instruction()
+		cpu.DECODE(opcode) // TODO: should decode return a function?
 
 		// EMULATE_GRAPHICS()
 		// EMULATE_SOUND()
@@ -181,6 +180,8 @@ func (cpu *CPU) DECODE(opcode uint16) func(uint16) {
 		case 0x65:
 			cpu.EXECUTE_0xFX65()
 		}
+	default:
+		fmt.Println("OPCODE, ", opcode, " not recognized")
 	}
 
 	return nil
