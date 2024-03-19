@@ -93,59 +93,93 @@ func (cpu *CPU) FETCH() uint16 {
 }
 
 func (cpu *CPU) DECODE(opcode uint16) func(uint16) {
-	nibble_one := opcode & 0xF000
-	nibble_two := opcode & 0x0F00
-	nibble_three := opcode & 0x00F0
+	nibble_one := (opcode & 0xF000) >> 12
+	nibble_two := (opcode & 0x0F00) >> 8
+	nibble_three := (opcode & 0x00F0) >> 4
 	nibble_four := opcode & 0x000F
 
 	fmt.Println(nibble_one, nibble_two, nibble_three, nibble_four)
 
 	switch nibble_one {
 	case 0x0:
-
-	case 0x1:
 		switch nibble_four {
 		case 0x0:
+			cpu.EXECUTE_0x00E0()
 		case 0xE:
+			cpu.EXECUTE_0x00EE()
 		}
+	case 0x1:
+		cpu.EXECUTE_0x1NNN()
 	case 0x2:
+		cpu.EXECUTE_0x2NNN()
 	case 0x3:
+		cpu.EXECUTE_0x3XNN()
 	case 0x4:
+		cpu.EXECUTE_0x4XNN()
 	case 0x5:
+		cpu.EXECUTE_0x5XY0()
 	case 0x6:
+		cpu.EXECUTE_0x6XNN()
 	case 0x7:
+		cpu.EXECUTE_0x7XNN()
 	case 0x8:
 		switch nibble_four {
+		case 0x0:
+			cpu.EXECUTE_0x8XY0()
 		case 0x1:
+			cpu.EXECUTE_0x8XY1()
 		case 0x2:
+			cpu.EXECUTE_0x8XY2()
 		case 0x3:
+			cpu.EXECUTE_0x8XY3()
 		case 0x4:
+			cpu.EXECUTE_0x8XY4()
 		case 0x5:
+			cpu.EXECUTE_0x8XY5()
 		case 0x6:
+			cpu.EXECUTE_0x8XY6()
 		case 0x7:
+			cpu.EXECUTE_0x8XY7()
 		case 0xE:
+			cpu.EXECUTE_0x8XYE()
 		}
 	case 0x9:
+		cpu.EXECUTE_0x9XY0()
 	case 0xA:
+		cpu.EXECUTE_0xANNN()
 	case 0xB:
+		cpu.EXECUTE_0xBNNN()
 	case 0xC:
+		cpu.EXECUTE_0xCXNN()
 	case 0xD:
+		cpu.EXECUTE_0xDXYN()
 	case 0xE:
-		switch nibble_three | nibble_four {
+		switch nibble_three<<4 | nibble_four {
 		case 0x9E:
+			cpu.EXECUTE_0xEX9E()
 		case 0xA1:
+			cpu.EXECUTE_0xEXA1()
 		}
 	case 0xF:
-		switch nibble_three | nibble_four {
+		switch nibble_three<<4 | nibble_four {
 		case 0x07:
+			cpu.EXECUTE_0xFX07()
 		case 0x0A:
+			cpu.EXECUTE_0xFX0A()
 		case 0x15:
+			cpu.EXECUTE_0xFX15()
 		case 0x18:
+			cpu.EXECUTE_0xFX18()
 		case 0x1E:
+			cpu.EXECUTE_0xFX1E()
 		case 0x29:
+			cpu.EXECUTE_0xFX29()
 		case 0x33:
+			cpu.EXECUTE_0xFX33()
 		case 0x55:
+			cpu.EXECUTE_0xFX55()
 		case 0x65:
+			cpu.EXECUTE_0xFX65()
 		}
 	}
 
