@@ -2,8 +2,14 @@ package main
 
 import (
 	"fmt"
+	"unsafe"
 
 	"github.com/veandco/go-sdl2/sdl"
+)
+
+const (
+	WIDTH  int32 = 800
+	HEIGHT int32 = 600
 )
 
 func main() {
@@ -18,33 +24,41 @@ func main() {
 	}
 	defer sdl.Quit()
 
-	window, err := sdl.CreateWindow("test", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		800, 600, sdl.WINDOW_SHOWN)
+	window, err := sdl.CreateWindow("CHIP-8 Emulator",
+		sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
+		WIDTH, HEIGHT, sdl.WINDOW_SHOWN)
 	if err != nil {
 		panic(err)
 	}
 	defer window.Destroy()
 
-	surface, err := window.GetSurface()
+	renderer, err := sdl.CreateRenderer(window, -1, 0)
 	if err != nil {
 		panic(err)
 	}
-	surface.FillRect(nil, 0)
 
-	var display [64][32]byte
-	for i := 0; i < 64; i++ {
-		for j := 0; j < 32; j++ {
-			if i+j%2 == 0 {
-				display[i][j] = 1
-			}
+	var display [64 * 32]uint32
+	for i := 0; i < 64*32; i++ {
+		if i%4 == 0 {
+			display[i] = 0x00FFFFFF
 		}
 	}
 
-	rect := sdl.Rect{0, 0, 780, 580}
-	colour := sdl.Color{R: 255, G: 0, B: 255, A: 255} // purple
-	pixel := sdl.MapRGBA(surface.Format, colour.R, colour.G, colour.B, colour.A)
-	surface.FillRect(&rect, pixel)
-	window.UpdateSurface()
+	texture, err := renderer.CreateTexture(sdl.PIXELFORMAT_ABGR8888, sdl.TEXTUREACCESS_STREAMING, 64, 32)
+	if err != nil {
+		panic(err)
+	}
+
+	texture.Update(nil, unsafe.Pointer(&display[0]), 64*int(unsafe.Sizeof(uint32(0))))
+	renderer.Clear()
+	renderer.Copy(texture, nil, nil)
+	renderer.Present()
+
+	// rect := sdl.Rect{0, 0, 780, 580}
+	// colour := sdl.Color{R: 255, G: 0, B: 255, A: 255} // purple
+	// pixel := sdl.MapRGBA(surface.Format, colour.R, colour.G, colour.B, colour.A)
+	// surface.FillRect(&rect, pixel)
+	// window.UpdateSurface()
 
 	running := true
 	for running {
