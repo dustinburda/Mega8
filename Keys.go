@@ -1,3 +1,3 @@
 package main
 
-var keymap map[int]bool
+var keymap = make(map[int]bool)

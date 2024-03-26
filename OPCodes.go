@@ -112,11 +112,40 @@ func (cpu *CPU) EXECUTE_0xCXNN() {
 	fmt.Println("Executing 0xCXNN")
 }
 
-// @brief:
+// @brief: draw a sprite of height N at X,Y
 // @param:
 func (cpu *CPU) EXECUTE_0xDXYN(opcode uint16) {
 	fmt.Println("Executing 0xDXYN")
 
+	Vx := (opcode & 0x0F00) >> 8
+	Vy := (opcode & 0x00F0) >> 4
+	N := (opcode & 0x000F)
+
+	x := cpu.data_registers[Vx] % 64
+	y := cpu.data_registers[Vy] % 32
+
+	cpu.data_registers[0xF] = 0
+
+	for i := 0; i < int(N); i++ {
+		_ = cpu.memory[cpu.register_I+uint16(i)]
+
+		for j := 0; j < 8; j++ {
+
+			x += 1
+
+			// TODO:
+
+			if x >= 64 {
+				break
+			}
+		}
+		y += 1
+
+		if y >= 32 {
+			break
+		}
+
+	}
 }
 
 func (cpu *CPU) EXECUTE_0xEX9E() {
