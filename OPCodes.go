@@ -121,27 +121,38 @@ func (cpu *CPU) EXECUTE_0xDXYN(opcode uint16) {
 	Vy := (opcode & 0x00F0) >> 4
 	N := (opcode & 0x000F)
 
-	x := cpu.data_registers[Vx] % 64
-	y := cpu.data_registers[Vy] % 32
+	x := int(cpu.data_registers[Vx] % 64)
+	y := int(cpu.data_registers[Vy] % 32)
 
 	cpu.data_registers[0xF] = 0
 
-	for i := 0; i < int(N); i++ {
-		_ = cpu.memory[cpu.register_I+uint16(i)]
+	for row_offset := 0; row_offset < int(N); row_offset++ {
+		sprite_row := cpu.memory[cpu.register_I+uint16(row_offset)]
+		curr_y := y + row_offset
 
-		for j := 0; j < 8; j++ {
+		for col_offset := 0; col_offset < 8; col_offset++ {
+			mask := (1 << (7 - col_offset))
+			curr_x := x + col_offset
 
-			x += 1
+			sprite_pixel := int(sprite_row) & mask
+			display_pixel := cpu.display.GET_PIXEL(curr_y, curr_x)
 
-			// TODO:
+			if sprite_pixel != 0x0 {
 
-			if x >= 64 {
+				if display_pixel != 0x0 {
+					cpu.data_registers[0xF] = 1
+				}
+
+				new_display_pixel := display_pixel ^ uint32(0xFFFFFFFF)
+				cpu.display.SET_PIXEL(curr_y, curr_x, new_display_pixel)
+
+			}
+
+			if x+col_offset >= 63 {
 				break
 			}
 		}
-		y += 1
-
-		if y >= 32 {
+		if y+row_offset >= 32 {
 			break
 		}
 

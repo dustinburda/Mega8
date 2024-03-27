@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"unsafe"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -13,9 +12,9 @@ const (
 )
 
 func main() {
-	opcode := uint16(0xF40A)
 	var CHIP_8CPU CPU
-	CHIP_8CPU.DECODE(opcode)
+
+	CHIP_8CPU.LOAD_ROM("IBM_Logo.ch8")
 
 	var d Display
 	d.CLEAR_DISPLAY()
@@ -40,18 +39,18 @@ func main() {
 	}
 	defer renderer.Destroy()
 
-	// var display [64 * 32]uint32
-	for i := 0; i < 64*32; i++ {
-		x := i / 64
-		y := i % 64
+	// // var display [64 * 32]uint32
+	// for i := 0; i < 64*32; i++ {
+	// 	x := i / 64
+	// 	y := i % 64
 
-		fmt.Print(uint8(x), "  ", uint8(y))
-		if (x+y)%2 == 1 {
-			CHIP_8CPU.display.SET_PIXEL(x, y, 0x00FFFFFF)
-		} else {
-			fmt.Println()
-		}
-	}
+	// 	fmt.Print(uint8(x), "  ", uint8(y))
+	// 	if (x+y)%2 == 1 {
+	// 		CHIP_8CPU.display.SET_PIXEL(x, y, 0xFFFFFFFF)
+	// 	} else {
+	// 		fmt.Println()
+	// 	}
+	// }
 
 	texture, err := renderer.CreateTexture(sdl.PIXELFORMAT_ABGR8888, sdl.TEXTUREACCESS_STREAMING, 64, 32)
 	if err != nil {
@@ -72,6 +71,7 @@ func main() {
 		// if err != nil {
 		// 	panic(err)
 		// }
+		CHIP_8CPU.CYCLE()
 
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch t := event.(type) {
@@ -83,8 +83,6 @@ func main() {
 				handle_input(t, &running)
 			}
 		}
-
-		// CHIP_8CPU.display.buffer[PixelNum] = 0x00FFFFFF
 
 		texture.Update(nil, unsafe.Pointer(&CHIP_8CPU.display.buffer[0]), 64*int(unsafe.Sizeof(uint32(0))))
 		renderer.Clear()

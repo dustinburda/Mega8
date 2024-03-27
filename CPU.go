@@ -67,13 +67,10 @@ func (cpu *CPU) CPU_INIT() {
 
 // Single Fetch-Decode-Execute Cycle
 func (cpu *CPU) CYCLE() {
-	for {
-		opcode := cpu.FETCH() // OPCODE
-		cpu.DECODE(opcode)    // DECODE + EXECUTE
+	opcode := cpu.FETCH() // OPCODE
+	cpu.DECODE(opcode)    // DECODE + EXECUTE
 
-		// EMULATE_GRAPHICS()
-		// EMULATE_SOUND()
-	}
+	// TODO: add timer updates
 }
 
 func (cpu *CPU) MAIN_LOOP() {
