@@ -1,0 +1,12 @@
+1) Display Interactivity
+    (To Check if Display is Updating in Loop)
+    a) Parse Pixel from Command Line
+    b) Set Pixel
+
+
+
+2) Test IBM ROM
+    a) Finish DXYN
+
+    
+3) Implement other OPCodes
