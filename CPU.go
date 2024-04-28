@@ -127,23 +127,23 @@ func (cpu *CPU) DECODE(opcode uint16) func(uint16) {
 	case 0x8:
 		switch nibble_four {
 		case 0x0:
-			cpu.EXECUTE_0x8XY0()
+			cpu.EXECUTE_0x8XY0(opcode)
 		case 0x1:
-			cpu.EXECUTE_0x8XY1()
+			cpu.EXECUTE_0x8XY1(opcode)
 		case 0x2:
-			cpu.EXECUTE_0x8XY2()
+			cpu.EXECUTE_0x8XY2(opcode)
 		case 0x3:
-			cpu.EXECUTE_0x8XY3()
+			cpu.EXECUTE_0x8XY3(opcode)
 		case 0x4:
-			cpu.EXECUTE_0x8XY4()
+			cpu.EXECUTE_0x8XY4(opcode)
 		case 0x5:
-			cpu.EXECUTE_0x8XY5()
+			cpu.EXECUTE_0x8XY5(opcode)
 		case 0x6:
-			cpu.EXECUTE_0x8XY6()
+			cpu.EXECUTE_0x8XY6(opcode)
 		case 0x7:
-			cpu.EXECUTE_0x8XY7()
+			cpu.EXECUTE_0x8XY7(opcode)
 		case 0xE:
-			cpu.EXECUTE_0x8XYE()
+			cpu.EXECUTE_0x8XYE(opcode)
 		}
 	case 0x9:
 		cpu.EXECUTE_0x9XY0(opcode)

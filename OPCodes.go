@@ -91,41 +91,65 @@ func (cpu *CPU) EXECUTE_0x7XNN(opcode uint16) {
 	NN := (opcode & 0x00FF)
 
 	cpu.data_registers[Vx] += uint8(NN)
-
 }
 
-func (cpu *CPU) EXECUTE_0x8XY0() {
+// @brief: sets value register Vx to the value of Vy
+// @param: opcode to be executed
+func (cpu *CPU) EXECUTE_0x8XY0(opcode uint16) {
 	fmt.Println("Executing 0x8XY0")
+	Vx := (opcode & 0x0F00) >> 8
+	Vy := (opcode & 0x00F0) >> 4
+
+	cpu.data_registers[Vx] = cpu.data_registers[Vy]
 }
-func (cpu *CPU) EXECUTE_0x8XY1() {
+
+// @brief: sets value register Vx to the value of VX | Vy
+// @param: opcode to be executed
+func (cpu *CPU) EXECUTE_0x8XY1(opcode uint16) {
 	fmt.Println("Executing 0x8XY1")
+	Vx := (opcode & 0x0F00) >> 8
+	Vy := (opcode & 0x00F0) >> 4
+
+	cpu.data_registers[Vx] = cpu.data_registers[Vx] | cpu.data_registers[Vy]
 }
 
-func (cpu *CPU) EXECUTE_0x8XY2() {
+// @brief: sets value register Vx to the value of VX & Vy
+// @param: opcode to be executed
+func (cpu *CPU) EXECUTE_0x8XY2(opcode uint16) {
 	fmt.Println("Executing 0x8XY2")
+	Vx := (opcode & 0x0F00) >> 8
+	Vy := (opcode & 0x00F0) >> 4
+
+	cpu.data_registers[Vx] = cpu.data_registers[Vx] & cpu.data_registers[Vy]
 }
 
-func (cpu *CPU) EXECUTE_0x8XY3() {
+// @brief: sets value register Vx to the value of VX XOR Vy
+// @param: opcode to be executed
+func (cpu *CPU) EXECUTE_0x8XY3(opcode uint16) {
 	fmt.Println("Executing 0x8XY3")
+	Vx := (opcode & 0x0F00) >> 8
+	Vy := (opcode & 0x00F0) >> 4
+
+	cpu.data_registers[Vx] = cpu.data_registers[Vx] ^ cpu.data_registers[Vy]
 }
 
-func (cpu *CPU) EXECUTE_0x8XY4() {
+func (cpu *CPU) EXECUTE_0x8XY4(opcode uint16) {
 	fmt.Println("Executing 0x8XY4")
 }
 
-func (cpu *CPU) EXECUTE_0x8XY5() {
+func (cpu *CPU) EXECUTE_0x8XY5(opcode uint16) {
 	fmt.Println("Executing 0x8XY5")
 }
 
-func (cpu *CPU) EXECUTE_0x8XY6() {
+func (cpu *CPU) EXECUTE_0x8XY6(opcode uint16) {
 	fmt.Println("Executing 0x8XY6")
 }
 
-func (cpu *CPU) EXECUTE_0x8XY7() {
+func (cpu *CPU) EXECUTE_0x8XY7(opcode uint16) {
 	fmt.Println("Executing 0x8XY7")
 }
 
-func (cpu *CPU) EXECUTE_0x8XYE() {
+func (cpu *CPU) EXECUTE_0x8XYE(opcode uint16) {
 	fmt.Println("Executing 0x8XYE")
 }
 
