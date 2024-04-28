@@ -113,13 +113,13 @@ func (cpu *CPU) DECODE(opcode uint16) func(uint16) {
 	case 0x1:
 		cpu.EXECUTE_0x1NNN(opcode)
 	case 0x2:
-		cpu.EXECUTE_0x2NNN()
+		cpu.EXECUTE_0x2NNN(opcode)
 	case 0x3:
-		cpu.EXECUTE_0x3XNN()
+		cpu.EXECUTE_0x3XNN(opcode)
 	case 0x4:
-		cpu.EXECUTE_0x4XNN()
+		cpu.EXECUTE_0x4XNN(opcode)
 	case 0x5:
-		cpu.EXECUTE_0x5XY0()
+		cpu.EXECUTE_0x5XY0(opcode)
 	case 0x6:
 		cpu.EXECUTE_0x6XNN(opcode)
 	case 0x7:
@@ -146,7 +146,7 @@ func (cpu *CPU) DECODE(opcode uint16) func(uint16) {
 			cpu.EXECUTE_0x8XYE()
 		}
 	case 0x9:
-		cpu.EXECUTE_0x9XY0()
+		cpu.EXECUTE_0x9XY0(opcode)
 	case 0xA:
 		cpu.EXECUTE_0xANNN(opcode)
 	case 0xB:

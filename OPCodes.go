@@ -8,30 +8,67 @@ func (cpu *CPU) EXECUTE_0x00E0() {
 	cpu.display.CLEAR_DISPLAY()
 }
 
+// @brief: Return from subroutine (by assigning PC to top of stack)
 func (cpu *CPU) EXECUTE_0x00EE() {
 	fmt.Println("Executing 0x00E0")
+	stack_length := len(cpu.stack)
+	cpu.PC = cpu.stack[stack_length-1] // assign PC to top of stack
+
+	cpu.stack = cpu.stack[:stack_length-1] // Pop instruction off of stack
 }
 
+// @brief: Jump to instruction NNN in opcode
+// @param: opcode to be executed
 func (cpu *CPU) EXECUTE_0x1NNN(opcode uint16) {
 	fmt.Println("Executing 0x1NNN")
 	cpu.PC = (opcode & 0x0FFF)
 
 }
 
-func (cpu *CPU) EXECUTE_0x2NNN() {
+// @brief: Call subroutine at NNN in opcode (Store current PC on stack, and jump to NNN)
+// @param: opcode to be executed
+func (cpu *CPU) EXECUTE_0x2NNN(opcode uint16) {
 	fmt.Println("Executing 0x2NNN")
+	cpu.stack = append(cpu.stack, cpu.PC) // Push current PC on stack
+
+	cpu.PC = opcode & 0x0FFF // Jump to NNN
 }
 
-func (cpu *CPU) EXECUTE_0x3XNN() {
+// @brief:
+// @param:
+func (cpu *CPU) EXECUTE_0x3XNN(opcode uint16) {
 	fmt.Println("Executing 0x3XNN")
+	Vx := (opcode & 0x0F00) >> 8
+	NN := (opcode & 0x00FF)
+
+	if cpu.data_registers[Vx] == uint8(NN) {
+		cpu.PC += 2
+	}
 }
 
-func (cpu *CPU) EXECUTE_0x4XNN() {
+// @brief: Skip next instruction if Vx != NN
+// @param: opcode to be executed
+func (cpu *CPU) EXECUTE_0x4XNN(opcode uint16) {
 	fmt.Println("Executing 0x4XNN")
+	Vx := (opcode & 0x0F00) >> 8
+	NN := (opcode & 0x00FF)
+
+	if cpu.data_registers[Vx] != uint8(NN) {
+		cpu.PC += 2
+	}
 }
 
-func (cpu *CPU) EXECUTE_0x5XY0() {
+// @brief: Skip next instruction if Vx = Vy
+// @param: opcode to be executed
+func (cpu *CPU) EXECUTE_0x5XY0(opcode uint16) {
 	fmt.Println("Executing 0x5XY0")
+
+	Vx := (opcode & 0x0F00) >> 8
+	Vy := (opcode & 0x00F0) >> 4
+
+	if cpu.data_registers[Vx] == cpu.data_registers[Vy] {
+		cpu.PC += 2
+	}
 }
 
 // @brief: sets register Vx to value NN
@@ -92,8 +129,16 @@ func (cpu *CPU) EXECUTE_0x8XYE() {
 	fmt.Println("Executing 0x8XYE")
 }
 
-func (cpu *CPU) EXECUTE_0x9XY0() {
+// @brief: Skip next instruction if Vx != Vy
+// @param: opcode to be executed
+func (cpu *CPU) EXECUTE_0x9XY0(opcode uint16) {
 	fmt.Println("Executing 0x9XY0")
+	Vx := (opcode & 0x0F00) >> 8
+	Vy := (opcode & 0x00F0) >> 4
+
+	if cpu.data_registers[Vx] != cpu.data_registers[Vy] {
+		cpu.PC += 2
+	}
 }
 
 func (cpu *CPU) EXECUTE_0xANNN(opcode uint16) {
