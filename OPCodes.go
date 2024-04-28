@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand/v2"
+)
 
 // @brief: Clears display
 func (cpu *CPU) EXECUTE_0x00E0() {
@@ -93,7 +96,7 @@ func (cpu *CPU) EXECUTE_0x7XNN(opcode uint16) {
 	cpu.data_registers[Vx] += uint8(NN)
 }
 
-// @brief: sets value register Vx to the value of Vy
+// @brief: sets value of register Vx to the value of Vy
 // @param: opcode to be executed
 func (cpu *CPU) EXECUTE_0x8XY0(opcode uint16) {
 	fmt.Println("Executing 0x8XY0")
@@ -103,7 +106,7 @@ func (cpu *CPU) EXECUTE_0x8XY0(opcode uint16) {
 	cpu.data_registers[Vx] = cpu.data_registers[Vy]
 }
 
-// @brief: sets value register Vx to the value of VX | Vy
+// @brief: sets value of register Vx to the value of VX | Vy
 // @param: opcode to be executed
 func (cpu *CPU) EXECUTE_0x8XY1(opcode uint16) {
 	fmt.Println("Executing 0x8XY1")
@@ -113,7 +116,7 @@ func (cpu *CPU) EXECUTE_0x8XY1(opcode uint16) {
 	cpu.data_registers[Vx] = cpu.data_registers[Vx] | cpu.data_registers[Vy]
 }
 
-// @brief: sets value register Vx to the value of VX & Vy
+// @brief: sets value of register Vx to the value of VX & Vy
 // @param: opcode to be executed
 func (cpu *CPU) EXECUTE_0x8XY2(opcode uint16) {
 	fmt.Println("Executing 0x8XY2")
@@ -123,7 +126,7 @@ func (cpu *CPU) EXECUTE_0x8XY2(opcode uint16) {
 	cpu.data_registers[Vx] = cpu.data_registers[Vx] & cpu.data_registers[Vy]
 }
 
-// @brief: sets value register Vx to the value of VX XOR Vy
+// @brief: sets value of register Vx to the value of VX XOR Vy
 // @param: opcode to be executed
 func (cpu *CPU) EXECUTE_0x8XY3(opcode uint16) {
 	fmt.Println("Executing 0x8XY3")
@@ -133,24 +136,69 @@ func (cpu *CPU) EXECUTE_0x8XY3(opcode uint16) {
 	cpu.data_registers[Vx] = cpu.data_registers[Vx] ^ cpu.data_registers[Vy]
 }
 
+// @brief: sets value of register Vx to the value of VX + Vy, VF set to 1 if overflow
+// @param: opcode to be executed
 func (cpu *CPU) EXECUTE_0x8XY4(opcode uint16) {
 	fmt.Println("Executing 0x8XY4")
+	Vx := (opcode & 0x0F00) >> 8
+	Vy := (opcode & 0x00F0) >> 4
+
+	sum := cpu.data_registers[Vx] + cpu.data_registers[Vy]
+	// TODO: fix overflow logic
+
+	// Could use ternary operator or even set cpu.data_registers[0xF] = (sum < cpu.data_registers[Vx])
+	if sum < cpu.data_registers[Vx] {
+		cpu.data_registers[0xF] = 1
+	} else {
+		cpu.data_registers[0xF] = 0
+	}
+
+	cpu.data_registers[Vx] = sum
 }
 
+// @brief: sets value of register Vx to the value of Vx - Vy
+// @param: opcode to be executed
 func (cpu *CPU) EXECUTE_0x8XY5(opcode uint16) {
 	fmt.Println("Executing 0x8XY5")
+	Vx := (opcode & 0x0F00) >> 8
+	Vy := (opcode & 0x00F0) >> 4
+
+	cpu.data_registers[Vx] = cpu.data_registers[Vx] - cpu.data_registers[Vy]
 }
 
+// @brief: sets value of register Vx to the value of Vx >> 1, stores least significant bit of Vx in Vf
+// @param: opcode to be executed
 func (cpu *CPU) EXECUTE_0x8XY6(opcode uint16) {
 	fmt.Println("Executing 0x8XY6")
+	Vx := (opcode & 0x0F00) >> 8
+	lsb := (cpu.data_registers[Vx] & 0x1)
+
+	cpu.data_registers[0xF] = lsb
+	cpu.data_registers[Vx] = cpu.data_registers[Vx] >> 1
+
 }
 
+// @brief: sets value register Vx to the value of Vy - Vx
+// @param: opcode to be executed
 func (cpu *CPU) EXECUTE_0x8XY7(opcode uint16) {
 	fmt.Println("Executing 0x8XY7")
+	Vx := (opcode & 0x0F00) >> 8
+	Vy := (opcode & 0x00F0) >> 4
+
+	// TODO: UNDERFLOW LOGIC
+
+	cpu.data_registers[Vx] = cpu.data_registers[Vy] - cpu.data_registers[Vx]
 }
 
+// @brief: sets value of register Vx to the value of Vx << 1, stores least significant bit of Vx in Vf
+// @param: opcode to be executed
 func (cpu *CPU) EXECUTE_0x8XYE(opcode uint16) {
 	fmt.Println("Executing 0x8XYE")
+	Vx := (opcode & 0x0F00) >> 8
+	msb := (cpu.data_registers[Vx] & 0x80) >> 7
+
+	cpu.data_registers[0xF] = msb
+	cpu.data_registers[Vx] = cpu.data_registers[Vx] << 1
 }
 
 // @brief: Skip next instruction if Vx != Vy
@@ -165,6 +213,8 @@ func (cpu *CPU) EXECUTE_0x9XY0(opcode uint16) {
 	}
 }
 
+// @brief: Sets register I to address NNN
+// @param: opcode to be executed
 func (cpu *CPU) EXECUTE_0xANNN(opcode uint16) {
 	fmt.Println("Executing 0xANNN")
 
@@ -173,12 +223,25 @@ func (cpu *CPU) EXECUTE_0xANNN(opcode uint16) {
 	cpu.register_I = NNN
 }
 
-func (cpu *CPU) EXECUTE_0xBNNN() {
+// @brief: Sets program counter to value NNN + value at register V0
+// @param: opcode to be executed
+func (cpu *CPU) EXECUTE_0xBNNN(opcode uint16) {
 	fmt.Println("Executing 0xBNNN")
+	NNN := (opcode & 0x0FFF)
+
+	cpu.PC = NNN + uint16(cpu.data_registers[0])
 }
 
-func (cpu *CPU) EXECUTE_0xCXNN() {
+// @brief: Sets value of Vx register to (random number) & NN
+// @param: opcode to be executed
+func (cpu *CPU) EXECUTE_0xCXNN(opcode uint16) {
 	fmt.Println("Executing 0xCXNN")
+	NN := uint8(opcode & 0x00FF)
+	Vx := (opcode & 0x0F00) >> 8
+
+	random := uint8(rand.IntN(255))
+
+	cpu.data_registers[Vx] = (NN & random)
 }
 
 // @brief: draw a sprite of height N at X,Y

@@ -150,9 +150,9 @@ func (cpu *CPU) DECODE(opcode uint16) func(uint16) {
 	case 0xA:
 		cpu.EXECUTE_0xANNN(opcode)
 	case 0xB:
-		cpu.EXECUTE_0xBNNN()
+		cpu.EXECUTE_0xBNNN(opcode)
 	case 0xC:
-		cpu.EXECUTE_0xCXNN()
+		cpu.EXECUTE_0xCXNN(opcode)
 	case 0xD:
 		cpu.EXECUTE_0xDXYN(opcode)
 	case 0xE:
